@@ -21,6 +21,7 @@ const cli = __importStar(require("@actions/exec"));
 const io = __importStar(require("@actions/io"));
 const cache = __importStar(require("@actions/tool-cache"));
 const path = __importStar(require("path"));
+const npm = require('libnpm');
 const TOOL = 'expo-cli-test';
 function temporaryPath() {
     if (process.env['RUNNER_TEMP']) {
@@ -36,7 +37,11 @@ function temporaryPath() {
 }
 function resolve(version) {
     return __awaiter(this, void 0, void 0, function* () {
-        return '3.0.10';
+        const manifest = yield npm.manifest(`expo-cli@${version}`);
+        if (!manifest.version) {
+            throw new Error(`Could not find expo-cli version "${version}"`);
+        }
+        return manifest.version;
     });
 }
 function install(version) {

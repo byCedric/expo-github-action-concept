@@ -4,6 +4,7 @@ import * as io from '@actions/io';
 import * as cache from '@actions/tool-cache';
 import * as path from 'path';
 
+const npm = require('libnpm');
 const TOOL = 'expo-cli-test';
 
 function temporaryPath() {
@@ -21,7 +22,13 @@ function temporaryPath() {
 }
 
 async function resolve(version: string) {
-    return '3.0.10';
+    const manifest = await npm.manifest(`expo-cli@${version}`);
+
+    if (!manifest.version) {
+        throw new Error(`Could not find expo-cli version "${version}"`);
+    }
+
+    return manifest.version
 }
 
 async function install(version: string) {
