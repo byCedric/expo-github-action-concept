@@ -23,6 +23,9 @@ const cache = __importStar(require("@actions/tool-cache"));
 const path = __importStar(require("path"));
 const TOOL = 'expo-cli-test';
 function expoInstallPath() {
+    if (process.env['RUNNER_TEMP']) {
+        return process.env['RUNNER_TEMP'];
+    }
     switch (process.platform) {
         case 'linux': return path.join('/home', 'actions', 'temp');
         case 'darwin': return path.join('/Users', 'actions', 'temp');
