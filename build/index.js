@@ -32,14 +32,16 @@ function resolve(version) {
         return manifest.version;
     });
 }
-function lockfiles(version, manager, expoPath) {
+function installWithLockfile(version, manager, expoPath) {
     return __awaiter(this, void 0, void 0, function* () {
         switch (manager) {
             case 'npm':
                 yield io.cp(path.join(__dirname, '..', 'lockfiles', `npm-${version}.json`), path.join(expoPath, 'package-lock.json'));
+                yield cli.exec(yield io.which(manager), ['ci'], { cwd: expoPath });
                 break;
             case 'yarn':
                 yield io.cp(path.join(__dirname, '..', 'lockfiles', `yarn-${version}.lock`), path.join(expoPath, 'yarn.lock'));
+                yield cli.exec(yield io.which(manager), ['install', '--frozen-lock-file'], { cwd: expoPath });
                 break;
         }
     });
@@ -51,8 +53,7 @@ function install(version, manager) {
             expoPath = process.env['RUNNER_TEMP'] || '';
             yield io.mkdirP(expoPath);
             try {
-                yield lockfiles(version, manager, expoPath);
-                yield cli.exec(yield io.which(manager), ['install'], { cwd: expoPath });
+                yield installWithLockfile(version, manager, expoPath);
             }
             catch (_a) {
                 yield cli.exec(yield io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
