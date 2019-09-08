@@ -47,6 +47,7 @@ function install(version = '3.0.10') {
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const expoPath = yield install();
+        console.log('EXPO INSTALLED AT', expoPath);
         core.addPath(path.join(expoPath, 'node_modules', '.bin'));
         const username = core.getInput('expo-username');
         const password = core.getInput('expo-password');

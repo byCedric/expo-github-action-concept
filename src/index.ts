@@ -34,6 +34,8 @@ async function install(version = '3.0.10') {
 async function run() {
     const expoPath = await install();
 
+    console.log('EXPO INSTALLED AT', expoPath);
+
     core.addPath(path.join(expoPath, 'node_modules', '.bin'));
 
     const username = core.getInput('expo-username');
