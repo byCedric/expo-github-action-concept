@@ -5,7 +5,10 @@ description: Use Expo CLI in your GitHub Actions workflow.
 input:
   expo-version:
     description: The Expo CLI version to install, use any semver available.
-    default: 3.0.10
+    default: latest
+  expo-manager:
+    description: The package manger used to install the Expo CLI.
+    default: npm
   expo-username:
     description: Your Expo username, for authentication.
   expo-password:

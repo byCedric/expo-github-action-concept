@@ -44,15 +44,22 @@ function resolve(version) {
         return manifest.version;
     });
 }
-function install(version) {
+function install(manager, version) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('FOUND EXPO CACHES:');
-        console.log(cache.findAllVersions(TOOL));
         let expoPath = cache.find(TOOL, version);
         if (!expoPath) {
             expoPath = temporaryPath();
             yield io.mkdirP(expoPath);
-            yield cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: expoPath });
+            switch (manager) {
+                case 'npm':
+                    yield cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: expoPath });
+                    break;
+                case 'yarn':
+                    yield cli.exec('yarn', ['add', `expo-cli@${version}`], { cwd: expoPath });
+                    break;
+                default:
+                    throw new Error(`Unknown manager "${manager}"`);
+            }
             expoPath = yield cache.cacheDir(expoPath, TOOL, version);
         }
         return path.join(expoPath, 'node_modules', '.bin');
@@ -70,7 +77,7 @@ function authenticate(username, password) {
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const version = yield resolve(core.getInput('expo-version'));
-        const expoPath = yield install(version);
+        const expoPath = yield install(core.getInput('expo-manager'), version);
         core.addPath(expoPath);
         yield authenticate(core.getInput('expo-username'), core.getInput('expo-password'));
     });

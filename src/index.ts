@@ -31,17 +31,25 @@ async function resolve(version: string) {
     return manifest.version
 }
 
-async function install(version: string) {
-    console.log('FOUND EXPO CACHES:');
-    console.log(cache.findAllVersions(TOOL));
-
+async function install(manager: string, version: string) {
     let expoPath = cache.find(TOOL, version);
 
     if (!expoPath) {
         expoPath = temporaryPath();
 
         await io.mkdirP(expoPath);
-        await cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: expoPath });
+
+        switch (manager) {
+            case 'npm':
+                await cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: expoPath });
+            break;
+            case 'yarn':
+                await cli.exec('yarn', ['add', `expo-cli@${version}`], { cwd: expoPath });
+            break;
+            default:
+                throw new Error(`Unknown manager "${manager}"`);
+        }
+
         expoPath = await cache.cacheDir(expoPath, TOOL, version);
     }
 
@@ -61,7 +69,7 @@ async function authenticate(username?: string, password?: string) {
 
 async function run() {
     const version = await resolve(core.getInput('expo-version'));
-    const expoPath = await install(version);
+    const expoPath = await install(core.getInput('expo-manager'), version);
 
     core.addPath(expoPath);
 
