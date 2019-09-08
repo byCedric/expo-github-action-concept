@@ -8,9 +8,9 @@ const TOOL = 'expo-cli-test';
 
 function expoInstallPath() {
     switch (process.platform) {
-        case 'linux': return path.join('/home', 'actions', 'expo-cli');
-        case 'darwin': return path.join('/Users', 'actions', 'expo-cli');
-        case 'win32': return path.join(process.env['USERPROFILE'] || 'C:\\', 'actions', 'expo-cli');
+        case 'linux': return path.join('/home', 'actions', 'temp');
+        case 'darwin': return path.join('/Users', 'actions', 'temp');
+        case 'win32': return path.join(process.env['USERPROFILE'] || 'C:\\', 'actions', 'temp');
         default:
             throw new Error(`Unknown system "${process.platform}"`);
     }
