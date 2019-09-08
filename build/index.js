@@ -18,7 +18,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const cli = __importStar(require("@actions/exec"));
+const cache = __importStar(require("@actions/tool-cache"));
 const path = __importStar(require("path"));
+const TOOL = 'expo-cli-test';
 function getSystemPreset() {
     switch (process.platform) {
         case 'linux':
@@ -31,12 +33,21 @@ function getSystemPreset() {
             throw new Error(`Unknown operating system "${process.platform}".`);
     }
 }
+function install(version = '3.0.10') {
+    return __awaiter(this, void 0, void 0, function* () {
+        const system = getSystemPreset();
+        const path = cache.find(TOOL, version);
+        if (path) {
+            return path;
+        }
+        yield cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
+        return yield cache.cacheDir(system.folder, TOOL, version);
+    });
+}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const version = core.getInput('expo-version');
-        const system = getSystemPreset();
-        yield cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
-        core.addPath(path.join(system.folder, 'node_modules', '.bin'));
+        const expoPath = yield install();
+        core.addPath(path.join(expoPath, 'node_modules', '.bin'));
         const username = core.getInput('expo-username');
         const password = core.getInput('expo-password');
         if (username && password) {

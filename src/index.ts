@@ -4,6 +4,8 @@ import * as io from '@actions/io';
 import * as cache from '@actions/tool-cache';
 import * as path from 'path';
 
+const TOOL = 'expo-cli-test';
+
 function getSystemPreset() {
     switch (process.platform) {
         case 'linux':
@@ -17,13 +19,22 @@ function getSystemPreset() {
     }
 }
 
-async function run() {
-    const version = core.getInput('expo-version');
+async function install(version = '3.0.10') {
     const system = getSystemPreset();
+    const path = cache.find(TOOL, version);
+
+    if (path) {
+        return path;
+    }
 
     await cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
+    return await cache.cacheDir(system.folder, TOOL, version);
+}
 
-    core.addPath(path.join(system.folder, 'node_modules', '.bin'));
+async function run() {
+    const expoPath = await install();
+
+    core.addPath(path.join(expoPath, 'node_modules', '.bin'));
 
     const username = core.getInput('expo-username');
     const password = core.getInput('expo-password');
