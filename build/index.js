@@ -18,6 +18,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const cli = __importStar(require("@actions/exec"));
+const io = __importStar(require("@actions/io"));
 const cache = __importStar(require("@actions/tool-cache"));
 const path = __importStar(require("path"));
 const TOOL = 'expo-cli-test';
@@ -41,7 +42,8 @@ function expoToCache(version, path) {
 function expoFromNpm(version) {
     return __awaiter(this, void 0, void 0, function* () {
         const target = expoInstallPath();
-        yield cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: target });
+        const npm = yield io.which('npm');
+        yield cli.exec(npm, ['install', `expo-cli@${version}`], { cwd: target });
         return target;
     });
 }

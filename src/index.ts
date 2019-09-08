@@ -26,7 +26,8 @@ async function expoToCache(version: string, path: string) {
 
 async function expoFromNpm(version: string) {
     const target = expoInstallPath();
-    await cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: target });
+    const npm = await io.which('npm');
+    await cli.exec(npm, ['install', `expo-cli@${version}`], { cwd: target });
     return target;
 }
 
