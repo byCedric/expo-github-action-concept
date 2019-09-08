@@ -34,16 +34,14 @@ function getSystemPreset() {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const version = core.getInput('expo-version');
         const system = getSystemPreset();
-        yield cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
-        // await cli.exec('yarn', ['add', `expo-cli@${version}`]);
+        const version = core.getInput('expo-version');
+        yield cli.exec(yield io.which('npm'), ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
         core.addPath(path.join(system.folder, 'node_modules', '.bin'));
-        const expo = yield io.which('expo');
         const username = core.getInput('expo-username');
         const password = core.getInput('expo-password');
         if (username && password) {
-            yield cli.exec(expo, ['login', '--non-interactive', `--username ${username}`], {
+            yield cli.exec(yield io.which('expo'), ['login', '--non-interactive', `--username ${username}`], {
                 env: { EXPO_CLI_PASSWORD: password },
             });
         }
