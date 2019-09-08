@@ -29,7 +29,7 @@ async function run() {
     const password = core.getInput('expo-password');
 
     if (username && password) {
-        await cli.exec('expo login', [`username="${username}"`, `password="${password}"`]);
+        await cli.exec(`expo login --username="${username}" --password="${password}"`);
     }
 }
 
