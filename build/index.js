@@ -42,7 +42,7 @@ function install(version = '3.0.10') {
         if (path) {
             return path;
         }
-        yield cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
+        yield cli.exec('npm install', ['-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
         return yield cache.cacheDir(system.folder, TOOL, version);
     });
 }

@@ -30,7 +30,7 @@ async function install(version = '3.0.10') {
         return path;
     }
 
-    await cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
+    await cli.exec('npm install', ['-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
     return await cache.cacheDir(system.folder, TOOL, version);
 }
 
