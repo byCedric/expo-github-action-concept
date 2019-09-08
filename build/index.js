@@ -23,18 +23,6 @@ const cache = __importStar(require("@actions/tool-cache"));
 const path = __importStar(require("path"));
 const npm = require('libnpm');
 const TOOL = 'expo-cli-test';
-function temporaryPath() {
-    if (process.env['RUNNER_TEMP']) {
-        return process.env['RUNNER_TEMP'];
-    }
-    switch (process.platform) {
-        case 'linux': return path.join('/home', 'actions', 'temp');
-        case 'darwin': return path.join('/Users', 'actions', 'temp');
-        case 'win32': return path.join(process.env['USERPROFILE'] || 'C:\\', 'actions', 'temp');
-        default:
-            throw new Error(`Unknown system "${process.platform}"`);
-    }
-}
 function resolve(version) {
     return __awaiter(this, void 0, void 0, function* () {
         const manifest = yield npm.manifest(`expo-cli@${version}`);
@@ -47,8 +35,13 @@ function resolve(version) {
 function install(version, manager = 'npm') {
     return __awaiter(this, void 0, void 0, function* () {
         let expoPath = cache.find(TOOL, version);
+        const managers = yield Promise.all([
+            io.which('yarn'),
+            io.which('npm'),
+        ]);
+        console.log(managers);
         if (!expoPath) {
-            expoPath = temporaryPath();
+            expoPath = process.env['RUNNER_TEMP'] || '';
             yield io.mkdirP(expoPath);
             switch (manager) {
                 case 'npm':

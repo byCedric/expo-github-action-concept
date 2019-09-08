@@ -7,20 +7,6 @@ import * as path from 'path';
 const npm = require('libnpm');
 const TOOL = 'expo-cli-test';
 
-function temporaryPath() {
-    if (process.env['RUNNER_TEMP']) {
-        return process.env['RUNNER_TEMP'];
-    }
-
-    switch (process.platform) {
-        case 'linux': return path.join('/home', 'actions', 'temp');
-        case 'darwin': return path.join('/Users', 'actions', 'temp');
-        case 'win32': return path.join(process.env['USERPROFILE'] || 'C:\\', 'actions', 'temp');
-        default:
-            throw new Error(`Unknown system "${process.platform}"`);
-    }
-}
-
 async function resolve(version: string) {
     const manifest = await npm.manifest(`expo-cli@${version}`);
 
@@ -34,8 +20,15 @@ async function resolve(version: string) {
 async function install(version: string, manager: string = 'npm') {
     let expoPath = cache.find(TOOL, version);
 
+    const managers = await Promise.all([
+        io.which('yarn'),
+        io.which('npm'),
+    ]);
+
+    console.log(managers);
+
     if (!expoPath) {
-        expoPath = temporaryPath();
+        expoPath = process.env['RUNNER_TEMP'] || '';
 
         await io.mkdirP(expoPath);
 
