@@ -41,6 +41,7 @@ function installWithLockfile(version, manager, expoPath) {
                 break;
             case 'yarn':
                 yield io.cp(path.join(__dirname, '..', 'lockfiles', `yarn-${version}.lock`), path.join(expoPath, 'yarn.lock'));
+                yield cli.exec('cat', ['yarn.lock'], { cwd: expoPath });
                 yield cli.exec(yield io.which(manager), ['install', '--frozen-lock-file'], { cwd: expoPath });
                 break;
         }

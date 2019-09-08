@@ -31,7 +31,8 @@ async function installWithLockfile(version: string, manager: string, expoPath: s
             await io.cp(
                 path.join(__dirname, '..', 'lockfiles', `yarn-${version}.lock`),
                 path.join(expoPath, 'yarn.lock'),
-            );
+            ); 
+            await cli.exec('cat', ['yarn.lock'], { cwd: expoPath });
             await cli.exec(await io.which(manager), ['install', '--frozen-lock-file'], { cwd: expoPath });
         break;
     }
