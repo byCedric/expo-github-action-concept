@@ -21,7 +21,7 @@ async function run() {
     const system = getSystemPreset();
     const version = core.getInput('expo-version');
 
-    await cli.exec(await io.which('npm'), ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
+    await cli.exec(await io.which('npm'), ['install', '-g', `--prefix="${system.folder}"`, `expo-cli@${version}`]);
 
     core.addPath(path.join(system.folder, 'node_modules', '.bin'));
 
