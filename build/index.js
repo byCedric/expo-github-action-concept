@@ -38,12 +38,12 @@ function run() {
         yield cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
         // await cli.exec('yarn', ['add', `expo-cli@${version}`]);
         core.addPath(path.join(system.folder, 'node_modules', '.bin'));
+        const expoBin = path.join(system.folder, 'node_modules', '.bin', 'expo');
         const username = core.getInput('username');
         const password = core.getInput('password');
         if (username && password) {
-            yield cli.exec('expo', ['login', '--non-interactive', `--username ${username}`], {
+            yield cli.exec(expoBin, ['login', '--non-interactive', `--username ${username}`], {
                 env: { EXPO_CLI_PASSWORD: password },
-                cwd: path.join(system.folder, 'node_modules', '.bin'),
             });
         }
     });

@@ -25,13 +25,14 @@ async function run() {
 
     core.addPath(path.join(system.folder, 'node_modules', '.bin'));
 
+    const expoBin = path.join(system.folder, 'node_modules', '.bin', 'expo');
+
     const username = core.getInput('username');
     const password = core.getInput('password');
 
     if (username && password) {
-        await cli.exec('expo', ['login', '--non-interactive', `--username ${username}`], {
+        await cli.exec(expoBin, ['login', '--non-interactive', `--username ${username}`], {
             env: { EXPO_CLI_PASSWORD: password },
-            cwd: path.join(system.folder, 'node_modules', '.bin'),
         });
     }
 }
