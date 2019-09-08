@@ -45,7 +45,7 @@ function install(version, manager = 'npm') {
             yield io.mkdirP(expoPath);
             switch (manager) {
                 case 'npm':
-                    yield cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: expoPath });
+                    yield cli.exec('npm', ['add', `expo-cli@${version}`], { cwd: expoPath });
                     break;
                 case 'yarn':
                     yield cli.exec('yarn', ['add', `expo-cli@${version}`], { cwd: expoPath });
@@ -69,8 +69,8 @@ function authenticate(username, password) {
 }
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const version = yield resolve(core.getInput('expo-version'));
-        const expoPath = yield install(version, core.getInput('expo-manager'));
+        const version = yield resolve(core.getInput('expo-version') || 'latest');
+        const expoPath = yield install(version, core.getInput('expo-manager') || 'npm');
         core.addPath(expoPath);
         yield authenticate(core.getInput('expo-username'), core.getInput('expo-password'));
     });

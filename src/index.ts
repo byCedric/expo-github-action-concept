@@ -34,7 +34,7 @@ async function install(version: string, manager: string = 'npm') {
 
         switch (manager) {
             case 'npm':
-                await cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: expoPath });
+                await cli.exec('npm', ['add', `expo-cli@${version}`], { cwd: expoPath });
             break;
             case 'yarn':
                 await cli.exec('yarn', ['add', `expo-cli@${version}`], { cwd: expoPath });
@@ -61,8 +61,8 @@ async function authenticate(username?: string, password?: string) {
 }
 
 async function run() {
-    const version = await resolve(core.getInput('expo-version'));
-    const expoPath = await install(version, core.getInput('expo-manager'));
+    const version = await resolve(core.getInput('expo-version') || 'latest');
+    const expoPath = await install(version, core.getInput('expo-manager') || 'npm');
 
     core.addPath(expoPath);
 
