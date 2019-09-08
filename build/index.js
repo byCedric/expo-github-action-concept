@@ -41,7 +41,7 @@ function run() {
         const password = core.getInput('expo-password');
         if (username && password) {
             yield cli.exec('expo', ['login', '--non-interactive', `--username ${username}`], {
-                env: { EXPO_CLI_PASSWORD: password },
+                env: Object.assign(Object.assign({}, process.env), { EXPO_CLI_PASSWORD: password }),
             });
         }
     });
