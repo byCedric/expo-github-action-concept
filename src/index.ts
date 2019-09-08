@@ -39,7 +39,7 @@ async function install(version: string) {
 
         await io.mkdirP(expoPath);
         await cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: expoPath });
-        await cache.cacheDir(expoPath, TOOL, version);
+        expoPath = await cache.cacheDir(expoPath, TOOL, version);
     }
 
     return path.join(expoPath, 'node_modules', '.bin');

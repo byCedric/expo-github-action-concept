@@ -51,7 +51,7 @@ function install(version) {
             expoPath = temporaryPath();
             yield io.mkdirP(expoPath);
             yield cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: expoPath });
-            yield cache.cacheDir(expoPath, TOOL, version);
+            expoPath = yield cache.cacheDir(expoPath, TOOL, version);
         }
         return path.join(expoPath, 'node_modules', '.bin');
     });
