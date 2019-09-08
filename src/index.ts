@@ -18,10 +18,10 @@ function getSystemPreset() {
 }
 
 async function run() {
-    const system = getSystemPreset();
     const version = core.getInput('expo-version');
+    const system = getSystemPreset();
 
-    await cli.exec('npm', ['install', '-g', `--prefix="${system.folder}"`, `expo-cli@${version}`]);
+    await cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
 
     core.addPath(path.join(system.folder, 'node_modules', '.bin'));
 
@@ -29,7 +29,9 @@ async function run() {
     const password = core.getInput('expo-password');
 
     if (username && password) {
-        await cli.exec('expo', ['login', '--non-interactive', `--username="${username}"`, `--password="${password}"`]);
+        await cli.exec('expo', ['login', '--non-interactive', `--username ${username}`], {
+            env: { EXPO_CLI_PASSWORD: password },
+        });
     }
 }
 
