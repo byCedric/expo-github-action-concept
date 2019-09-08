@@ -18,23 +18,14 @@ async function resolve(version: string) {
 }
 
 async function installWithLockfile(version: string, manager: string, expoPath: string) {
-    switch (manager) {
-        case 'npm':
-            await io.cp(
-                path.join(__dirname, '..', 'lockfiles', `npm-${version}.json`),
-                path.join(expoPath, 'package-lock.json'),
-            );
-            await cli.exec(await io.which(manager), ['ci'], { cwd: expoPath });
-        break;
+    await io.cp(
+        path.join(__dirname, '..', 'lockfiles', manager, version),
+        path.join(expoPath),
+    );
 
-        case 'yarn':
-            await io.cp(
-                path.join(__dirname, '..', 'lockfiles', `yarn-${version}.lock`),
-                path.join(expoPath, 'yarn.lock'),
-            ); 
-            await cli.exec('cat', ['yarn.lock'], { cwd: expoPath });
-            await cli.exec(await io.which(manager), ['install', '--frozen-lock-file'], { cwd: expoPath });
-        break;
+    switch (manager) {
+        case 'npm': await cli.exec(await io.which(manager), ['ci'], { cwd: expoPath }); break;
+        case 'yarn': await cli.exec(await io.which(manager), ['install', '--frozen-lock-file'], { cwd: expoPath }); break;
     }
 }
 

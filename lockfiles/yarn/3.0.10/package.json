@@ -1,0 +1,7 @@
+{
+    "private": true,
+    "name": "expo-github-action",
+    "dependencies": {
+        "expo-cli": "3.0.10"
+    }
+}
