@@ -1,0 +1,18 @@
+---
+name: Expo GitHub Action
+author: Cedric van Putten <me@bycedric.com>
+description: Use Expo CLI in your GitHub Actions workflow.
+input:
+  version:
+    description: The Expo CLI version to install, use any semver available.
+    default: 3.0.10
+  username:
+    description: Your Expo username, for authentication.
+  password:
+    description: Your Expo password, for authentication. (use with secrets)
+branding:
+  icon: terminal
+  color: gray-dark
+runs:
+  using: node12
+  main: build/index.js
