@@ -34,7 +34,7 @@ function resolve(version) {
 }
 function installWithLockfile(version, manager, expoPath) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield io.cp(path.join(__dirname, '..', 'lockfiles', manager, version), path.join(expoPath));
+        yield io.cp(path.join(__dirname, '..', 'lockfiles', manager, version), path.join(expoPath), { recursive: true });
         switch (manager) {
             case 'npm':
                 yield cli.exec(yield io.which(manager), ['ci'], { cwd: expoPath });
@@ -55,8 +55,6 @@ function install(version, manager) {
                 yield installWithLockfile(version, manager, expoPath);
             }
             catch (error) {
-                console.log('lock file install failed, using backup method...');
-                console.log(error.message);
                 yield cli.exec(yield io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
             }
             expoPath = yield cache.cacheDir(expoPath, TOOL, version);

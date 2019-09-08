@@ -21,6 +21,7 @@ async function installWithLockfile(version: string, manager: string, expoPath: s
     await io.cp(
         path.join(__dirname, '..', 'lockfiles', manager, version),
         path.join(expoPath),
+        { recursive: true },
     );
 
     switch (manager) {
@@ -40,8 +41,6 @@ async function install(version: string, manager: string) {
         try {
             await installWithLockfile(version, manager, expoPath);
         } catch (error) {
-            console.log('lock file install failed, using backup method...');
-            console.log(error.message);
             await cli.exec(await io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
         }
 
