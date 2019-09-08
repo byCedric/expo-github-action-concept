@@ -23,6 +23,9 @@ async function install(version = '3.0.10') {
     const system = getSystemPreset();
     const path = cache.find(TOOL, version);
 
+    console.log('CACHE RETURNED');
+    console.log(path);
+
     if (path) {
         return path;
     }
@@ -34,7 +37,8 @@ async function install(version = '3.0.10') {
 async function run() {
     const expoPath = await install();
 
-    console.log('EXPO INSTALLED AT', expoPath);
+    console.log('EXPO INSTALLED AT');
+    console.log(expoPath);
 
     core.addPath(path.join(expoPath, 'node_modules', '.bin'));
 
