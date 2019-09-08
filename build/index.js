@@ -43,6 +43,7 @@ function expoFromNpm(version) {
     return __awaiter(this, void 0, void 0, function* () {
         const target = expoInstallPath();
         const npm = yield io.which('npm');
+        yield io.mkdirP(target);
         yield cli.exec(npm, ['install', `expo-cli@${version}`], { cwd: target });
         return target;
     });
