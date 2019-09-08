@@ -17,13 +17,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
-const expo_1 = require("./expo");
-const install_1 = require("./install");
-function run() {
+const cli = __importStar(require("@actions/exec"));
+/**
+ * Authenticate at Expo using `expo login`.
+ * This step is required for publishing and building new apps.
+ * It uses the `EXPO_CLI_PASSWORD` environment variable for improved security.
+ */
+function authenticate(username, password) {
     return __awaiter(this, void 0, void 0, function* () {
-        const path = yield install_1.install(core.getInput('expo-version') || 'latest', core.getInput('expo-packager') || 'npm');
-        core.addPath(path);
-        yield expo_1.authenticate(core.getInput('expo-username'), core.getInput('expo-password'));
+        if (!username || !password) {
+            return core.debug('Skipping authentication, `expo-username` and/or `expo-password` not set...');
+        }
+        yield cli.exec('expo', ['login', `--username=${username}`], {
+            env: Object.assign(Object.assign({}, process.env), { EXPO_CLI_PASSWORD: password }),
+        });
     });
 }
-run();
+exports.authenticate = authenticate;

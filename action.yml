@@ -6,7 +6,7 @@ input:
   expo-version:
     description: The Expo CLI version to install, use any semver available.
     default: latest
-  expo-manager:
+  expo-packager:
     description: The package manger used to install the Expo CLI.
     default: npm
   expo-username:
