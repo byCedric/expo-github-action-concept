@@ -43,6 +43,7 @@ function run() {
         if (username && password) {
             yield cli.exec('expo', ['login', '--non-interactive', `--username ${username}`], {
                 env: { EXPO_CLI_PASSWORD: password },
+                cwd: path.join(system.folder, 'node_modules', '.bin'),
             });
         }
     });
