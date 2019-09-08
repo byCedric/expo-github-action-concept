@@ -43,6 +43,7 @@ async function install(version: string, manager: string) {
         try {
             await installWithLockfile(version, manager, expoPath);
         } catch (error) {
+            console.log(error.message);
             await cli.exec(await io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
         }
 

@@ -56,6 +56,7 @@ function install(version, manager) {
                 yield installWithLockfile(version, manager, expoPath);
             }
             catch (error) {
+                console.log(error.message);
                 yield cli.exec(yield io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
             }
             expoPath = yield cache.cacheDir(expoPath, TOOL, version);
