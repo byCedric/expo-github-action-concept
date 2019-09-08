@@ -45,7 +45,7 @@ async function install(version: string, manager: string) {
 
         try {
             await lockfiles(version, manager, expoPath);
-            await cli.exec(await io.which(manager), ['install']);
+            await cli.exec(await io.which(manager), ['install'], { cwd: expoPath });
         } catch {
             await cli.exec(await io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
         }

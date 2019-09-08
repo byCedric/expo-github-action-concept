@@ -52,7 +52,7 @@ function install(version, manager) {
             yield io.mkdirP(expoPath);
             try {
                 yield lockfiles(version, manager, expoPath);
-                yield cli.exec(yield io.which(manager), ['install']);
+                yield cli.exec(yield io.which(manager), ['install'], { cwd: expoPath });
             }
             catch (_a) {
                 yield cli.exec(yield io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
