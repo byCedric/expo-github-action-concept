@@ -20,7 +20,7 @@ async function run() {
     const version = core.getInput('version');
     const system = getSystemPreset();
 
-    await cli.exec('npm', ['install', `expo-cli@${version}`, system.folder]);
+    await cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
     // await cli.exec('yarn', ['add', `expo-cli@${version}`]);
 
     core.addPath(path.join(system.folder, 'node_modules', '.bin'));

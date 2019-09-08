@@ -35,7 +35,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const version = core.getInput('version');
         const system = getSystemPreset();
-        yield cli.exec('npm', ['install', `expo-cli@${version}`, system.folder]);
+        yield cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
         // await cli.exec('yarn', ['add', `expo-cli@${version}`]);
         core.addPath(path.join(system.folder, 'node_modules', '.bin'));
         const username = core.getInput('username');
