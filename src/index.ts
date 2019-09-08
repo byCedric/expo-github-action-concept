@@ -23,16 +23,16 @@ async function run() {
 
     await cli.exec(await io.which('npm'), ['install', '-g', `--prefix="${system.folder}"`, `expo-cli@${version}`]);
 
-    core.addPath(path.join(system.folder, 'node_modules', '.bin'));
-
     const username = core.getInput('expo-username');
     const password = core.getInput('expo-password');
 
     if (username && password) {
-        await cli.exec(await io.which('expo'), ['login', '--non-interactive', `--username ${username}`], {
+        await cli.exec(path.join(system.folder, 'expo-cli'), ['login', '--non-interactive', `--username ${username}`], {
             env: { EXPO_CLI_PASSWORD: password },
         });
     }
+
+    core.addPath(path.join(system.folder, 'node_modules', '.bin'));
 }
 
 run();
