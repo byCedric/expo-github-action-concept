@@ -24,6 +24,8 @@ async function installWithLockfile(version: string, manager: string, expoPath: s
         { recursive: true },
     );
 
+    await cli.exec('ls', ['-la'], { cwd: expoPath });
+
     switch (manager) {
         case 'npm': await cli.exec(await io.which(manager), ['ci'], { cwd: expoPath }); break;
         case 'yarn': await cli.exec(await io.which(manager), ['install', '--frozen-lock-file'], { cwd: expoPath }); break;
