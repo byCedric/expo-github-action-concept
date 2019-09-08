@@ -17,32 +17,13 @@ async function resolve(version: string) {
     return manifest.version
 }
 
-async function install(version: string, manager: string = 'npm') {
+async function install(version: string, manager: string) {
     let expoPath = cache.find(TOOL, version);
-
-    const managers = await Promise.all([
-        io.which('yarn'),
-        io.which('npm'),
-    ]);
-
-    console.log(managers);
 
     if (!expoPath) {
         expoPath = process.env['RUNNER_TEMP'] || '';
-
         await io.mkdirP(expoPath);
-
-        switch (manager) {
-            case 'npm':
-                await cli.exec('npm', ['add', `expo-cli@${version}`], { cwd: expoPath });
-            break;
-            case 'yarn':
-                await cli.exec('yarn', ['add', `expo-cli@${version}`], { cwd: expoPath });
-            break;
-            default:
-                throw new Error(`Unknown manager "${manager}"`);
-        }
-
+        await cli.exec(await io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
         expoPath = await cache.cacheDir(expoPath, TOOL, version);
     }
 

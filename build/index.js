@@ -32,27 +32,13 @@ function resolve(version) {
         return manifest.version;
     });
 }
-function install(version, manager = 'npm') {
+function install(version, manager) {
     return __awaiter(this, void 0, void 0, function* () {
         let expoPath = cache.find(TOOL, version);
-        const managers = yield Promise.all([
-            io.which('yarn'),
-            io.which('npm'),
-        ]);
-        console.log(managers);
         if (!expoPath) {
             expoPath = process.env['RUNNER_TEMP'] || '';
             yield io.mkdirP(expoPath);
-            switch (manager) {
-                case 'npm':
-                    yield cli.exec('npm', ['add', `expo-cli@${version}`], { cwd: expoPath });
-                    break;
-                case 'yarn':
-                    yield cli.exec('yarn', ['add', `expo-cli@${version}`], { cwd: expoPath });
-                    break;
-                default:
-                    throw new Error(`Unknown manager "${manager}"`);
-            }
+            yield cli.exec(yield io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
             expoPath = yield cache.cacheDir(expoPath, TOOL, version);
         }
         return path.join(expoPath, 'node_modules', '.bin');
