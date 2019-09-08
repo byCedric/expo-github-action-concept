@@ -54,7 +54,7 @@ function install(version) {
 function authenticate(username, password) {
     return __awaiter(this, void 0, void 0, function* () {
         if (username && password) {
-            yield cli.exec('expo login', [`--username="${username}"`], {
+            yield cli.exec('expo login', [`--username ${username}`], {
                 env: Object.assign(Object.assign({}, process.env), { EXPO_CLI_PASSWORD: password }),
             });
         }
