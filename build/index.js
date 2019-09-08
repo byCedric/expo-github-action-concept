@@ -44,7 +44,7 @@ function resolve(version) {
         return manifest.version;
     });
 }
-function install(manager, version) {
+function install(version, manager = 'npm') {
     return __awaiter(this, void 0, void 0, function* () {
         let expoPath = cache.find(TOOL, version);
         if (!expoPath) {
@@ -77,7 +77,7 @@ function authenticate(username, password) {
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const version = yield resolve(core.getInput('expo-version'));
-        const expoPath = yield install(core.getInput('expo-manager'), version);
+        const expoPath = yield install(version, core.getInput('expo-manager'));
         core.addPath(expoPath);
         yield authenticate(core.getInput('expo-username'), core.getInput('expo-password'));
     });

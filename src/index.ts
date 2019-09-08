@@ -31,7 +31,7 @@ async function resolve(version: string) {
     return manifest.version
 }
 
-async function install(manager: string, version: string) {
+async function install(version: string, manager: string = 'npm') {
     let expoPath = cache.find(TOOL, version);
 
     if (!expoPath) {
@@ -69,7 +69,7 @@ async function authenticate(username?: string, password?: string) {
 
 async function run() {
     const version = await resolve(core.getInput('expo-version'));
-    const expoPath = await install(core.getInput('expo-manager'), version);
+    const expoPath = await install(version, core.getInput('expo-manager'));
 
     core.addPath(expoPath);
 
