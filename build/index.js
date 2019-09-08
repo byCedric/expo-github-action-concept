@@ -40,7 +40,7 @@ function run() {
         const username = core.getInput('expo-username');
         const password = core.getInput('expo-password');
         if (username && password) {
-            yield cli.exec(`expo login --username="${username}" --password="${password}"`);
+            yield cli.exec('expo login', [`--username="${username}"`, `--password="${password}"`]);
         }
     });
 }
