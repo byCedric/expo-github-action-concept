@@ -6,36 +6,38 @@ import * as path from 'path';
 
 const TOOL = 'expo-cli-test';
 
-function getSystemPreset() {
+function expoInstallPath() {
     switch (process.platform) {
-        case 'linux':
-            return { name: 'linux', folder: path.join('/home', 'actions', 'expo-cli') };
-        case 'darwin':
-            return { name: 'macos', folder: path.join('/Users', 'actions', 'expo-cli') };
-        case 'win32':
-            return { name: 'windows', folder: path.join(process.env['USERPROFILE'] || 'C:\\', 'actions', 'expo-cli') };
+        case 'linux': return path.join('/home', 'actions', 'expo-cli');
+        case 'darwin': return path.join('/Users', 'actions', 'expo-cli');
+        case 'win32': return path.join(process.env['USERPROFILE'] || 'C:\\', 'actions', 'expo-cli');
         default:
-            throw new Error(`Unknown operating system "${process.platform}".`);
+            throw new Error(`Unknown system "${process.platform}"`);
     }
 }
 
-async function install(version = '3.0.10') {
-    const system = getSystemPreset();
-    const path = cache.find(TOOL, version);
+function expoFromCache(version: string) {
+    return cache.find(TOOL, version);
+}
 
-    console.log('CACHE RETURNED');
-    console.log(path);
+async function expoToCache(version: string, path: string) {
+    await cache.cacheDir(path, TOOL, version);
+}
 
-    if (path) {
-        return path;
-    }
-
-    await cli.exec('npm install', ['-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
-    return await cache.cacheDir(system.folder, TOOL, version);
+async function expoFromNpm(version: string) {
+    const target = expoInstallPath();
+    await cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: target });
+    return target;
 }
 
 async function run() {
-    const expoPath = await install();
+    const version = '3.0.10';
+    let expoPath = expoFromCache(version);
+
+    if (!expoPath) {
+        expoPath = await expoFromNpm(version);
+        await expoToCache(version, expoPath);
+    }
 
     console.log('EXPO INSTALLED AT');
     console.log(expoPath);

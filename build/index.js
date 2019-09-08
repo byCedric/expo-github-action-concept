@@ -21,34 +21,38 @@ const cli = __importStar(require("@actions/exec"));
 const cache = __importStar(require("@actions/tool-cache"));
 const path = __importStar(require("path"));
 const TOOL = 'expo-cli-test';
-function getSystemPreset() {
+function expoInstallPath() {
     switch (process.platform) {
-        case 'linux':
-            return { name: 'linux', folder: path.join('/home', 'actions', 'expo-cli') };
-        case 'darwin':
-            return { name: 'macos', folder: path.join('/Users', 'actions', 'expo-cli') };
-        case 'win32':
-            return { name: 'windows', folder: path.join(process.env['USERPROFILE'] || 'C:\\', 'actions', 'expo-cli') };
+        case 'linux': return path.join('/home', 'actions', 'expo-cli');
+        case 'darwin': return path.join('/Users', 'actions', 'expo-cli');
+        case 'win32': return path.join(process.env['USERPROFILE'] || 'C:\\', 'actions', 'expo-cli');
         default:
-            throw new Error(`Unknown operating system "${process.platform}".`);
+            throw new Error(`Unknown system "${process.platform}"`);
     }
 }
-function install(version = '3.0.10') {
+function expoFromCache(version) {
+    return cache.find(TOOL, version);
+}
+function expoToCache(version, path) {
     return __awaiter(this, void 0, void 0, function* () {
-        const system = getSystemPreset();
-        const path = cache.find(TOOL, version);
-        console.log('CACHE RETURNED');
-        console.log(path);
-        if (path) {
-            return path;
-        }
-        yield cli.exec('npm install', ['-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
-        return yield cache.cacheDir(system.folder, TOOL, version);
+        yield cache.cacheDir(path, TOOL, version);
+    });
+}
+function expoFromNpm(version) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const target = expoInstallPath();
+        yield cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: target });
+        return target;
     });
 }
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const expoPath = yield install();
+        const version = '3.0.10';
+        let expoPath = expoFromCache(version);
+        if (!expoPath) {
+            expoPath = yield expoFromNpm(version);
+            yield expoToCache(version, expoPath);
+        }
         console.log('EXPO INSTALLED AT');
         console.log(expoPath);
         core.addPath(path.join(expoPath, 'node_modules', '.bin'));
