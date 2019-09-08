@@ -50,8 +50,13 @@ function install(version, manager) {
         if (!expoPath) {
             expoPath = process.env['RUNNER_TEMP'] || '';
             yield io.mkdirP(expoPath);
-            yield lockfiles(version, manager, expoPath);
-            yield cli.exec(yield io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
+            try {
+                yield lockfiles(version, manager, expoPath);
+                yield cli.exec(yield io.which(manager), ['install']);
+            }
+            catch (_a) {
+                yield cli.exec(yield io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
+            }
             expoPath = yield cache.cacheDir(expoPath, TOOL, version);
         }
         return path.join(expoPath, 'node_modules', '.bin');

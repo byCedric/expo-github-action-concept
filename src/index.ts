@@ -42,8 +42,14 @@ async function install(version: string, manager: string) {
         expoPath = process.env['RUNNER_TEMP'] || '';
 
         await io.mkdirP(expoPath);
-        await lockfiles(version, manager, expoPath);
-        await cli.exec(await io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
+
+        try {
+            await lockfiles(version, manager, expoPath);
+            await cli.exec(await io.which(manager), ['install']);
+        } catch {
+            await cli.exec(await io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
+        }
+
         expoPath = await cache.cacheDir(expoPath, TOOL, version);
     }
 
