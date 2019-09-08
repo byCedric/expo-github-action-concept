@@ -20,6 +20,10 @@ function temporaryPath() {
     }
 }
 
+async function resolve(version: string) {
+    return '3.0.10';
+}
+
 async function install(version: string) {
     let expoPath = cache.find(TOOL, version);
 
@@ -46,7 +50,7 @@ async function authenticate(username?: string, password?: string) {
 }
 
 async function run() {
-    const version = '3.0.10';
+    const version = await resolve(core.getInput('expo-version'));
     const expoPath = await install(version);
 
     core.addPath(expoPath);
