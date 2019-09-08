@@ -34,13 +34,16 @@ function resolve(version) {
 }
 function installWithLockfile(version, manager, expoPath) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield io.cp(path.join(__dirname, '..', 'lockfiles', manager, version, '*'), path.join(expoPath), { recursive: true });
-        yield cli.exec('ls', ['-la'], { cwd: expoPath });
+        const lockfiles = path.join(__dirname, '..', 'lockfiles', manager, version);
         switch (manager) {
             case 'npm':
+                yield io.cp(path.join(lockfiles, 'package.json'), path.join(expoPath, 'package.json'));
+                yield io.cp(path.join(lockfiles, 'package-lock.json'), path.join(expoPath, 'package-lock.json'));
                 yield cli.exec(yield io.which(manager), ['ci'], { cwd: expoPath });
                 break;
             case 'yarn':
+                yield io.cp(path.join(lockfiles, 'package.json'), path.join(expoPath, 'package.json'));
+                yield io.cp(path.join(lockfiles, 'yarn.lock'), path.join(expoPath, 'yarn.lock'));
                 yield cli.exec(yield io.which(manager), ['install', '--frozen-lock-file'], { cwd: expoPath });
                 break;
         }
