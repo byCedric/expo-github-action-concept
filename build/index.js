@@ -18,6 +18,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
 const cli = __importStar(require("@actions/exec"));
+const io = __importStar(require("@actions/io"));
 const path = __importStar(require("path"));
 function getSystemPreset() {
     switch (process.platform) {
@@ -38,11 +39,11 @@ function run() {
         yield cli.exec('npm', ['install', '-g', `--prefix ${system.folder}`, `expo-cli@${version}`]);
         // await cli.exec('yarn', ['add', `expo-cli@${version}`]);
         core.addPath(path.join(system.folder, 'node_modules', '.bin'));
-        const expoBin = path.join(system.folder, 'node_modules', '.bin', 'expo');
+        const expo = yield io.which('expo');
         const username = core.getInput('expo-username');
         const password = core.getInput('expo-password');
         if (username && password) {
-            yield cli.exec(expoBin, ['login', '--non-interactive', `--username ${username}`], {
+            yield cli.exec(expo, ['login', '--non-interactive', `--username ${username}`], {
                 env: { EXPO_CLI_PASSWORD: password },
             });
         }

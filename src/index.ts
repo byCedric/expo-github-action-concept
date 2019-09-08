@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import * as cli from '@actions/exec';
+import * as io from '@actions/io';
 import * as cache from '@actions/tool-cache';
 import * as path from 'path';
 
@@ -25,11 +26,12 @@ async function run() {
 
     core.addPath(path.join(system.folder, 'node_modules', '.bin'));
 
+    const expo = await io.which('expo');
     const username = core.getInput('expo-username');
     const password = core.getInput('expo-password');
 
     if (username && password) {
-        await cli.exec('expo', ['login', '--non-interactive', `--username ${username}`], {
+        await cli.exec(expo, ['login', '--non-interactive', `--username ${username}`], {
             env: { EXPO_CLI_PASSWORD: password },
         });
     }
