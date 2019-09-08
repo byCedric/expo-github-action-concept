@@ -6,7 +6,7 @@ import * as path from 'path';
 
 const TOOL = 'expo-cli-test';
 
-function expoInstallPath() {
+function temporaryPath() {
     if (process.env['RUNNER_TEMP']) {
         return process.env['RUNNER_TEMP'];
     }
@@ -20,42 +20,41 @@ function expoInstallPath() {
     }
 }
 
-function expoFromCache(version: string) {
-    return cache.find(TOOL, version);
+async function install(version: string) {
+    let expoPath = cache.find(TOOL, version);
+
+    if (!expoPath) {
+        expoPath = temporaryPath();
+
+        await io.mkdirP(expoPath);
+        await cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: expoPath });
+        await cache.cacheDir(expoPath, TOOL, version);
+    }
+
+    return path.join(expoPath, 'node_modules', '.bin');
 }
 
-async function expoToCache(version: string, path: string) {
-    await cache.cacheDir(path, TOOL, version);
-}
-
-async function expoFromNpm(version: string) {
-    const target = expoInstallPath();
-    const npm = await io.which('npm');
-    await io.mkdirP(target);
-    await cli.exec(npm, ['install', `expo-cli@${version}`], { cwd: target });
-    return target;
+async function authenticate(username?: string, password?: string) {
+    if (username && password) {
+        await cli.exec('expo login', [`--username="${username}"`], {
+            env: {
+                ...process.env,
+                EXPO_CLI_PASSWORD: password,
+            },
+        });
+    }
 }
 
 async function run() {
     const version = '3.0.10';
-    let expoPath = expoFromCache(version);
+    const expoPath = await install(version);
 
-    if (!expoPath) {
-        expoPath = await expoFromNpm(version);
-        await expoToCache(version, expoPath);
-    }
+    core.addPath(expoPath);
 
-    console.log('EXPO INSTALLED AT');
-    console.log(expoPath);
-
-    core.addPath(path.join(expoPath, 'node_modules', '.bin'));
-
-    const username = core.getInput('expo-username');
-    const password = core.getInput('expo-password');
-
-    if (username && password) {
-        await cli.exec('expo login', [`--username="${username}"`, `--password="${password}"`]);
-    }
+    await authenticate(
+        core.getInput('expo-username'),
+        core.getInput('expo-password'),
+    );
 }
 
 run();

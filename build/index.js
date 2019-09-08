@@ -22,7 +22,7 @@ const io = __importStar(require("@actions/io"));
 const cache = __importStar(require("@actions/tool-cache"));
 const path = __importStar(require("path"));
 const TOOL = 'expo-cli-test';
-function expoInstallPath() {
+function temporaryPath() {
     if (process.env['RUNNER_TEMP']) {
         return process.env['RUNNER_TEMP'];
     }
@@ -34,39 +34,33 @@ function expoInstallPath() {
             throw new Error(`Unknown system "${process.platform}"`);
     }
 }
-function expoFromCache(version) {
-    return cache.find(TOOL, version);
-}
-function expoToCache(version, path) {
+function install(version) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield cache.cacheDir(path, TOOL, version);
+        let expoPath = cache.find(TOOL, version);
+        if (!expoPath) {
+            expoPath = temporaryPath();
+            yield io.mkdirP(expoPath);
+            yield cli.exec('npm', ['install', `expo-cli@${version}`], { cwd: expoPath });
+            yield cache.cacheDir(expoPath, TOOL, version);
+        }
+        return path.join(expoPath, 'node_modules', '.bin');
     });
 }
-function expoFromNpm(version) {
+function authenticate(username, password) {
     return __awaiter(this, void 0, void 0, function* () {
-        const target = expoInstallPath();
-        const npm = yield io.which('npm');
-        yield io.mkdirP(target);
-        yield cli.exec(npm, ['install', `expo-cli@${version}`], { cwd: target });
-        return target;
+        if (username && password) {
+            yield cli.exec('expo login', [`--username="${username}"`], {
+                env: Object.assign(Object.assign({}, process.env), { EXPO_CLI_PASSWORD: password }),
+            });
+        }
     });
 }
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const version = '3.0.10';
-        let expoPath = expoFromCache(version);
-        if (!expoPath) {
-            expoPath = yield expoFromNpm(version);
-            yield expoToCache(version, expoPath);
-        }
-        console.log('EXPO INSTALLED AT');
-        console.log(expoPath);
-        core.addPath(path.join(expoPath, 'node_modules', '.bin'));
-        const username = core.getInput('expo-username');
-        const password = core.getInput('expo-password');
-        if (username && password) {
-            yield cli.exec('expo login', [`--username="${username}"`, `--password="${password}"`]);
-        }
+        const expoPath = yield install(version);
+        core.addPath(expoPath);
+        yield authenticate(core.getInput('expo-username'), core.getInput('expo-password'));
     });
 }
 run();
