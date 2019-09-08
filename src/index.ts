@@ -14,7 +14,25 @@ async function resolve(version: string) {
         throw new Error(`Could not find expo-cli version "${version}"`);
     }
 
-    return manifest.version
+    return manifest.version;
+}
+
+async function lockfiles(version: string, manager: string, expoPath: string) {
+    switch (manager) {
+        case 'npm':
+            await io.cp(
+                path.join(__dirname, '..', 'lockfiles', `npm-${version}.json`),
+                path.join(expoPath, 'package-lock.json'),
+            );
+        break;
+
+        case 'yarn':
+            await io.cp(
+                path.join(__dirname, '..', 'lockfiles', `yarn-${version}.lock`),
+                path.join(expoPath, 'yarn.lock'),
+            );
+        break;
+    }
 }
 
 async function install(version: string, manager: string) {
@@ -22,7 +40,9 @@ async function install(version: string, manager: string) {
 
     if (!expoPath) {
         expoPath = process.env['RUNNER_TEMP'] || '';
+
         await io.mkdirP(expoPath);
+        await lockfiles(version, manager, expoPath);
         await cli.exec(await io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
         expoPath = await cache.cacheDir(expoPath, TOOL, version);
     }

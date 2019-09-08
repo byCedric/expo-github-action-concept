@@ -32,12 +32,25 @@ function resolve(version) {
         return manifest.version;
     });
 }
+function lockfiles(version, manager, expoPath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        switch (manager) {
+            case 'npm':
+                yield io.cp(path.join(__dirname, '..', 'lockfiles', `npm-${version}.json`), path.join(expoPath, 'package-lock.json'));
+                break;
+            case 'yarn':
+                yield io.cp(path.join(__dirname, '..', 'lockfiles', `yarn-${version}.lock`), path.join(expoPath, 'yarn.lock'));
+                break;
+        }
+    });
+}
 function install(version, manager) {
     return __awaiter(this, void 0, void 0, function* () {
         let expoPath = cache.find(TOOL, version);
         if (!expoPath) {
             expoPath = process.env['RUNNER_TEMP'] || '';
             yield io.mkdirP(expoPath);
+            yield lockfiles(version, manager, expoPath);
             yield cli.exec(yield io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
             expoPath = yield cache.cacheDir(expoPath, TOOL, version);
         }
