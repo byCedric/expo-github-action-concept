@@ -19,7 +19,7 @@ async function resolve(version: string) {
 
 async function installWithLockfile(version: string, manager: string, expoPath: string) {
     await io.cp(
-        path.join(__dirname, '..', 'lockfiles', manager, version),
+        path.join(__dirname, '..', 'lockfiles', manager, version, '*'),
         path.join(expoPath),
         { recursive: true },
     );

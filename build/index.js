@@ -34,7 +34,7 @@ function resolve(version) {
 }
 function installWithLockfile(version, manager, expoPath) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield io.cp(path.join(__dirname, '..', 'lockfiles', manager, version), path.join(expoPath), { recursive: true });
+        yield io.cp(path.join(__dirname, '..', 'lockfiles', manager, version, '*'), path.join(expoPath), { recursive: true });
         yield cli.exec('ls', ['-la'], { cwd: expoPath });
         switch (manager) {
             case 'npm':
