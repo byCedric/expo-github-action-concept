@@ -32,6 +32,9 @@ async function resolve(version: string) {
 }
 
 async function install(version: string) {
+    console.log('FOUND EXPO CACHES:');
+    console.log(cache.findAllVersions(TOOL));
+
     let expoPath = cache.find(TOOL, version);
 
     if (!expoPath) {

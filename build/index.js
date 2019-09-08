@@ -46,6 +46,8 @@ function resolve(version) {
 }
 function install(version) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log('FOUND EXPO CACHES:');
+        console.log(cache.findAllVersions(TOOL));
         let expoPath = cache.find(TOOL, version);
         if (!expoPath) {
             expoPath = temporaryPath();
