@@ -39,7 +39,9 @@ async function install(version: string, manager: string) {
 
         try {
             await installWithLockfile(version, manager, expoPath);
-        } catch {
+        } catch (error) {
+            console.log('lock file install failed, using backup method...');
+            console.log(error.message);
             await cli.exec(await io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
         }
 

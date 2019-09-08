@@ -54,7 +54,9 @@ function install(version, manager) {
             try {
                 yield installWithLockfile(version, manager, expoPath);
             }
-            catch (_a) {
+            catch (error) {
+                console.log('lock file install failed, using backup method...');
+                console.log(error.message);
                 yield cli.exec(yield io.which(manager), ['add', `expo-cli@${version}`], { cwd: expoPath });
             }
             expoPath = yield cache.cacheDir(expoPath, TOOL, version);
