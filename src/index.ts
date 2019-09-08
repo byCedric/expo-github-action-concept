@@ -40,7 +40,7 @@ async function install(version: string) {
 
 async function authenticate(username?: string, password?: string) {
     if (username && password) {
-        await cli.exec('expo login', [`--username ${username}`], {
+        await cli.exec('expo login', [`--username=${username}`], {
             env: {
                 ...process.env,
                 EXPO_CLI_PASSWORD: password,
